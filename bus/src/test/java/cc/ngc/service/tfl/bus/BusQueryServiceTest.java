@@ -7,8 +7,11 @@ public class BusQueryServiceTest {
     public static void main(String[] args) {
         Vertx vertx = Vertx.vertx();
         IBusQueryService service = new BusQueryService(vertx, 48411);
-
-        service.poll(event -> {
+        service.poll(response -> {
+            System.out.println(response.succeeded() ? "[OK]" : "[FAILED]");
+            if (response.succeeded()) {
+                System.out.println(response.result().toString());
+            }
         });
     }
 }

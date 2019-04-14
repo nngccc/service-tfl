@@ -4,5 +4,5 @@ import io.vertx.core.AsyncResult;
 import io.vertx.core.Handler;
 
 public interface IBusQueryService {
-    void poll(Handler<AsyncResult<BusQueryResponse>> response);
+    void poll(Handler<AsyncResult<BusQueryResponse>> handler);
 }
