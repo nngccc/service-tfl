@@ -20,17 +20,7 @@
         </plugins>
     </build>
 
-    <properties>
-        <vertx-core.version>3.4.2</vertx-core.version>
-    </properties>>
-
     <dependencies>
-        <dependency>
-            <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
-            <version>${vertx-core.version}</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-core</artifactId>
