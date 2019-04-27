@@ -1,1 +1,1 @@
-# Java Wrapper for the Legacy Tfl API
+# Java wrapper for selected public TFL APIs
