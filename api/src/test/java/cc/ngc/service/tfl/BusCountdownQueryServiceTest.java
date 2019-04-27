@@ -12,6 +12,8 @@ public class BusCountdownQueryServiceTest {
             System.out.println(response.succeeded() ? "[OK]" : "[FAILED]");
             if (response.succeeded()) {
                 System.out.println(response.result().toString());
+            } else {
+                System.out.println(response.cause());
             }
         });
     }
