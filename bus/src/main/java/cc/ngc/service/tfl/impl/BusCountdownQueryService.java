@@ -1,8 +1,8 @@
-package cc.ngc.service.tfl.bus;
+package cc.ngc.service.tfl.impl;
 
-import cc.ngc.service.tfl.bus.api.Bus;
-import cc.ngc.service.tfl.bus.api.BusQueryResponse;
-import cc.ngc.service.tfl.bus.api.IBusQueryService;
+import cc.ngc.service.tfl.api.IPredictedArrivalsQueryResponse;
+import cc.ngc.service.tfl.api.IPredictedArrivalsQueryService;
+import cc.ngc.service.tfl.api.IPrediction;
 import io.vertx.core.AsyncResult;
 import io.vertx.core.Future;
 import io.vertx.core.Handler;
@@ -12,11 +12,10 @@ import io.vertx.core.http.HttpClientOptions;
 
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-public class BusQueryService implements IBusQueryService {
+public class BusCountdownQueryService implements IPredictedArrivalsQueryService {
 
     private static final String Server = "countdown.api.tfl.gov.uk";
     private static final String BaseURI = "/interfaces/ura/instant_V1";
@@ -25,24 +24,23 @@ public class BusQueryService implements IBusQueryService {
     private final String requestURI;
     private final HttpClient client;
 
-    public BusQueryService(Vertx vertx, long stopCode) {
+    public BusCountdownQueryService(Vertx vertx, long stopCode) {
         StringBuilder sbURI = new StringBuilder(BaseURI);
         sbURI.append("?StopCode1=").append(stopCode);
         sbURI.append("&VisitNumber=").append(1);
         sbURI.append("&ReturnList=").append(ReturnList);
         this.requestURI = sbURI.toString();
-        this.client = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(Server).setDefaultPort(80)
-                .setSsl(false));
+        this.client = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(Server).setDefaultPort(80).setSsl(false));
     }
 
     //------------------------------------------------------------------------------------------------------------------
     // IBusQueryService
     //------------------------------------------------------------------------------------------------------------------
 
-    public void poll(Handler<AsyncResult<BusQueryResponse>> handler) {
+    public void poll(Handler<AsyncResult<IPredictedArrivalsQueryResponse>> handler) {
         client.get(requestURI).handler(response -> response.bodyHandler(body -> {
             String data = body.toString();
-            Optional<BusQueryResponse> busQueryResponse = parse(data);
+            Optional<PredictedArrivalsQueryResponse> busQueryResponse = parse(data);
             if (busQueryResponse.isPresent()) {
                 handler.handle(Future.succeededFuture(busQueryResponse.get()));
             } else {
@@ -55,7 +53,7 @@ public class BusQueryService implements IBusQueryService {
     // Helpers
     //------------------------------------------------------------------------------------------------------------------
 
-    private Optional<BusQueryResponse> parse(String data) {
+    private Optional<PredictedArrivalsQueryResponse> parse(String data) {
         if ((data == null) || (!data.startsWith("[")))
             return Optional.empty();
 
@@ -66,14 +64,14 @@ public class BusQueryService implements IBusQueryService {
          * [1,"Malvern Road","48411","K1","Kingston",1555270115000,1555270145000]
          */
         String[] lines = data.split("\n");
-        List<Bus> buses = new ArrayList<>();
+        List<IPrediction> arrivals = new ArrayList<>();
         for (int i = 1; i < lines.length; i++) {
             String[] tokens = lines[i].split(",");
             if (tokens.length > 5) {
                 Instant expected = Instant.ofEpochMilli(Long.valueOf(tokens[5]));
-                buses.add(new Bus(tokens[3].replaceAll("\"", ""), tokens[4].replaceAll("\"", ""), expected));
+                arrivals.add(new Prediction().expectedArrival(expected).lineName(tokens[3].replaceAll("\"", "")).destinationName(tokens[4].replaceAll("\"", "")));
             }
         }
-        return Optional.of(new BusQueryResponse(buses));
+        return Optional.of(new PredictedArrivalsQueryResponse(arrivals));
     }
 }
