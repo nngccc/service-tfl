@@ -11,6 +11,8 @@ public interface IPrediction {
 
     String getLineName();
 
+    String getPlatformName();
+
     String getDestinationName();
 
     String getTowards();
@@ -20,4 +22,6 @@ public interface IPrediction {
     long getSecondsToExpectedArrival();
 
     String getModeName();
+
+    String getStatus();
 }

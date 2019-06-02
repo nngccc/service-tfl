@@ -19,10 +19,12 @@ public class Prediction implements IPrediction {
     private String stationName;
     private String lineId;
     private String lineName;
+    private String platformName;
     private String destinationName;
     private String towards;
     private Instant expectedArrival;
     private String modeName;
+    private String status;
 
     @JsonCreator
     Prediction(
@@ -30,18 +32,22 @@ public class Prediction implements IPrediction {
             @JsonProperty("stationName") String stationName,
             @JsonProperty("lineId") String lineId,
             @JsonProperty("lineName") String lineName,
+            @JsonProperty("platformName") String platformName,
             @JsonProperty("destinationName") String destinationName,
             @JsonProperty("towards") String towards,
             @JsonProperty("expectedArrival") String expectedArrival,
-            @JsonProperty("modeName") String modeName) {
+            @JsonProperty("modeName") String modeName,
+            @JsonProperty("status") String status) {
         this.vehicleId = vehicleId;
         this.stationName = stationName;
         this.lineId = lineId;
         this.lineName = lineName;
+        this.platformName = platformName;
         this.destinationName = destinationName;
         this.towards = towards;
         this.expectedArrival = Instant.parse(expectedArrival);
         this.modeName = modeName;
+        this.status = status;
     }
 
     Prediction() {
@@ -72,6 +78,11 @@ public class Prediction implements IPrediction {
     }
 
     @Override
+    public String getPlatformName() {
+        return platformName;
+    }
+
+    @Override
     public String getDestinationName() {
         return destinationName;
     }
@@ -94,6 +105,11 @@ public class Prediction implements IPrediction {
     @Override
     public String getModeName() {
         return modeName;
+    }
+
+    @Override
+    public String getStatus() {
+        return status;
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -120,6 +136,11 @@ public class Prediction implements IPrediction {
         return this;
     }
 
+    Prediction platformName(String platformName) {
+        this.platformName = platformName;
+        return this;
+    }
+
     Prediction destinationName(String destinationName) {
         this.destinationName = destinationName;
         return this;
@@ -140,6 +161,11 @@ public class Prediction implements IPrediction {
         return this;
     }
 
+    Prediction status(String status) {
+        this.status = status;
+        return this;
+    }
+
     //------------------------------------------------------------------------------------------------------------------
     // Overrides
     //------------------------------------------------------------------------------------------------------------------
@@ -147,6 +173,7 @@ public class Prediction implements IPrediction {
     @Override
     public String toString() {
         return String.format("%s, '%s' to '%s' (in %s seconds)",
-                LocalDateTime.ofInstant(expectedArrival, ZoneId.systemDefault()).format(formatter), lineName, destinationName, getSecondsToExpectedArrival());
+                LocalDateTime.ofInstant(expectedArrival, ZoneId.systemDefault())
+                        .format(formatter), lineName, destinationName, getSecondsToExpectedArrival());
     }
 }
