@@ -16,8 +16,9 @@ public class PredictedTrainArrivalServiceTest {
             if (response.succeeded()) {
                 Collection<IPrediction> arrivals = response.result().getArrivals();
                 for (IPrediction train : arrivals){
-                    System.out.print(String.format("Due: %s, To: %s, Platform: %s, Status: %s\n", train.getVehicleId(),
-                            train.getDestinationName(), train.getPlatformName(), train.getStatus()));
+                    System.out.print(String.format("Due: %s, To: %s, Platform: %s, Status: %s (in %d mins)\n", train.getVehicleId(),
+                            train.getDestinationName(), train.getPlatformName(), train.getStatus(),
+                            train.getSecondsToExpectedArrival() / 60));
                 }
             }
         });
