@@ -68,8 +68,10 @@ public class BusCountdownQueryService implements IPredictedArrivalsQueryService 
         for (int i = 1; i < lines.length; i++) {
             String[] tokens = lines[i].split(",");
             if (tokens.length > 5) {
-                Instant expected = Instant.ofEpochMilli(Long.valueOf(tokens[5]));
-                arrivals.add(new Prediction().expectedArrival(expected).lineName(tokens[3].replaceAll("\"", "")).destinationName(tokens[4].replaceAll("\"", "")));
+                if (tokens[0].equals("[1")) {
+                    Instant expected = Instant.ofEpochMilli(Long.valueOf(tokens[5]));
+                    arrivals.add(new Prediction().expectedArrival(expected).lineName(tokens[3].replaceAll("\"", "")).destinationName(tokens[4].replaceAll("\"", "")));
+                }
             }
         }
         return Optional.of(new PredictedArrivalsQueryResponse(arrivals));

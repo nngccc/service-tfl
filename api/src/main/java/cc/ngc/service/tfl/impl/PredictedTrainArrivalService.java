@@ -24,6 +24,8 @@ import java.util.Optional;
 
 public class PredictedTrainArrivalService implements IPredictedArrivalsQueryService {
 
+    //http://ojp.nationalrail.co.uk/service/ldb/livetrainsjson?departing=true&liveTrainsFrom=SUR&liveTrainsTo=WAT
+
     /*
      * http://ojp.nationalrail.co.uk/service/ldbboard/dep/SUR/WAT/To
      * Due
@@ -105,7 +107,6 @@ public class PredictedTrainArrivalService implements IPredictedArrivalsQueryServ
                     break;
             }
         }
-
         return Optional.of(new PredictedArrivalsQueryResponse(trains));
     }
 
