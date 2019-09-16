@@ -100,20 +100,35 @@ public class PredictedTrainArrivalService implements IPredictedArrivalsQueryServ
                 case 3:
                     platform = element.text();
                     break;
-                case 4:
-                    Instant expectedArrival = getExpectedArrival(due);
-                    trains.add(new Prediction(due, null, null, null, platform, destination, null,
-                            expectedArrival.toString(), "train", status));
+                case 4: {
+                    if (!status.contains("epart")) {
+                        Instant expectedArrival = getExpectedArrival(due, status);
+                        trains.add(new Prediction(due, null, null, null, platform, destination, null,
+                                expectedArrival.toString(), "train", status));
+                    }
                     break;
+                }
             }
         }
         return Optional.of(new PredictedArrivalsQueryResponse(trains));
+    }
+
+    private Instant getExpectedArrival(String due, String status) {
+        if (status.contains("late")) {
+            try {
+                return getExpectedArrival(status.substring(0, 5));
+            } catch (Exception e) {
+            }
+        }
+
+        // Default
+        return getExpectedArrival(due);
     }
 
     private Instant getExpectedArrival(String due) {
         LocalTime lTime = LocalTime.parse(due);
         LocalDateTime now = LocalDateTime.now();
         return LocalDateTime.of(now.getYear(), now.getMonth(), now.getDayOfMonth(), lTime.getHour(), lTime.getMinute())
-                .toInstant(ZoneOffset.UTC);
+                .toInstant(ZoneOffset.systemDefault().getRules().getOffset(Instant.now()));
     }
 }
