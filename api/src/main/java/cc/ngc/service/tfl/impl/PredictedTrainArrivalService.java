@@ -74,42 +74,47 @@ public class PredictedTrainArrivalService implements IPredictedArrivalsQueryServ
     private Optional<PredictedArrivalsQueryResponse> parse(String data) {
         List<IPrediction> trains = new ArrayList<>();
 
-        Document doc = Jsoup.parse(data);
-        Elements eResults = doc.getElementsByClass("results trains");
-        Elements eTblCont = eResults.get(0).getElementsByClass("tbl-cont");
-        Elements eBody = eTblCont.get(0).getElementsByTag("tbody");
-        Elements eCells = eBody.get(0).getElementsByTag("td");
+        try {
+            Document doc = Jsoup.parse(data);
+            Elements eResults = doc.getElementsByClass("results trains");
+            Elements eTblCont = eResults.get(0).getElementsByClass("tbl-cont");
+            Elements eBody = eTblCont.get(0).getElementsByTag("tbody");
+            Elements eCells = eBody.get(0).getElementsByTag("td");
 
-        String due = null;
-        String destination = null;
-        String status = null;
-        String platform = null;
+            String due = null;
+            String destination = null;
+            String status = null;
+            String platform = null;
 
-        int index = 0;
-        for (Element element : eCells) {
-            switch (index++ % 5) {
-                case 0:
-                    due = element.text();
-                    break;
-                case 1:
-                    destination = element.text();
-                    break;
-                case 2:
-                    status = element.text();
-                    break;
-                case 3:
-                    platform = element.text();
-                    break;
-                case 4: {
-                    if (!status.contains("epart")) {
-                        Instant expectedArrival = getExpectedArrival(due, status);
-                        trains.add(new Prediction(due, null, null, null, platform, destination, null,
-                                expectedArrival.toString(), "train", status));
+            int index = 0;
+            for (Element element : eCells) {
+                switch (index++ % 5) {
+                    case 0:
+                        due = element.text();
+                        break;
+                    case 1:
+                        destination = element.text();
+                        break;
+                    case 2:
+                        status = element.text();
+                        break;
+                    case 3:
+                        platform = element.text();
+                        break;
+                    case 4: {
+                        if (!status.contains("epart")) {
+                            Instant expectedArrival = getExpectedArrival(due, status);
+                            trains.add(new Prediction(due, null, null, null, platform, destination, null,
+                                    expectedArrival.toString(), "train", status));
+                        }
+                        break;
                     }
-                    break;
                 }
             }
+        } catch (Exception e) {
+            // Ignore
         }
+
         return Optional.of(new PredictedArrivalsQueryResponse(trains));
     }
 
