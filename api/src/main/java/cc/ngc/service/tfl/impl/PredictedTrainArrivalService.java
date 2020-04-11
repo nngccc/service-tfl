@@ -24,10 +24,10 @@ import java.util.Optional;
 
 public class PredictedTrainArrivalService implements IPredictedArrivalsQueryService {
 
-    //http://ojp.nationalrail.co.uk/service/ldb/livetrainsjson?departing=true&liveTrainsFrom=SUR&liveTrainsTo=WAT
+    //https://ojp.nationalrail.co.uk/service/ldb/livetrainsjson?departing=true&liveTrainsFrom=SUR&liveTrainsTo=WAT
 
     /*
-     * http://ojp.nationalrail.co.uk/service/ldbboard/dep/SUR/WAT/To
+     * https://ojp.nationalrail.co.uk/service/ldbboard/dep/SUR/WAT/To
      * Due
      * -05:56
      * Destination
@@ -47,7 +47,7 @@ public class PredictedTrainArrivalService implements IPredictedArrivalsQueryServ
 
     public PredictedTrainArrivalService(Vertx vertx, String from, String to) {
         this.requestURI = String.format(BaseURIPattern, from, to);
-        this.client = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(Server));
+        this.client = vertx.createHttpClient(new HttpClientOptions().setDefaultHost(Server).setDefaultPort(443).setSsl(true));
     }
 
     //------------------------------------------------------------------------------------------------------------------
@@ -112,7 +112,7 @@ public class PredictedTrainArrivalService implements IPredictedArrivalsQueryServ
                 }
             }
         } catch (Exception e) {
-            // Ignore
+            return Optional.empty();
         }
 
         return Optional.of(new PredictedArrivalsQueryResponse(trains));
