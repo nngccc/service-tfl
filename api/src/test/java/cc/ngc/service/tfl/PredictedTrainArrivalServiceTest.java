@@ -13,7 +13,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class PredictedTrainArrivalServiceTest {
     public static void main(String[] args) throws InterruptedException {
         Vertx vertx = Vertx.vertx();
-        IPredictedArrivalsQueryService service = new PredictedTrainArrivalService(vertx, "SUR", "WAT");
+        IPredictedArrivalsQueryService service = new PredictedTrainArrivalService(vertx, "surbiton", "london-waterloo");
 
         AtomicReference<IPrediction> nextArrival = new AtomicReference<>();
         long ticks = 0;
